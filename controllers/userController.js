@@ -1,4 +1,8 @@
 const User = require("../models/User");
+const jwt = require('jsonwebtoken');
+
+require('dotenv').config();
+const jwtKey = process.env.jwtEncryptionKey;
 
 exports.login = async (req, res, next) => {
     try {
@@ -13,7 +17,16 @@ exports.login = async (req, res, next) => {
         if (!passwordMatch) {
             return res.status(401).json({ success: false, message: 'Invalid password' });
         }
-        res.status(200).json({ success: true, message: 'Login successful' });
+
+        let token = jwt.sign(
+            {
+                user_id: user._id,
+                username: user.Username,
+                UserRole: user.Role
+            },
+            jwtKey
+        );
+        res.status(200).json({ success: true, message: 'Login successful', Token: token });
     } catch (err) {
         next(err);
     }
@@ -35,13 +48,19 @@ exports.signup = async (req, res, next) => {
                 Password: password,
                 Role: 'Anonymous'
             });
-            // Save the new user within the ongoing transaction
+
             await newUser.save();
+            let token = jwt.sign({
+                user_id: newUser._id,
+                username: newUser.Username,
+                UserRole: newUser.Role
+            },
+                jwtKey
+            );
+            return res.status(200).json({ success: true, message: 'Signup successful', Token: token });
         } else {
             return res.status(409).json({ message: "Username not available" });
         }
-
-        res.status(200).json({ success: true, message: 'Signup successful' });
     } catch (err) {
         next(err);
     }

@@ -5,10 +5,13 @@ const { success, error } = require("consola");
 const { isHttpError } = require("http-errors");
 const logger = require('morgan');
 const path = require('path');
+const passport = require("passport");
 
+const Authentication = require("./Auth");
 const app = express();
-require("dotenv").config();
 
+require("dotenv").config();
+require('./middleware/passport')(passport);
 const DBurl = process.env.dbUrl;
 const Port = process.env.PORT || 3000;
 
@@ -19,6 +22,8 @@ app.use(cors());
 app.use('/user', require('./routes/userRoutes'));
 
 app.use('/public', express.static(path.join(__dirname, 'public/images/uploads-1694645444247-893258167.png')));
+
+app.use('/private/',Authentication,express.static(path.join(__dirname,'public/images/uploads-1694647725349-887633163.jpg')));
 
 app.use((error, req, res, next) => {
     let errorMessage = "An unknown error occurred";
@@ -35,7 +40,6 @@ app.use((error, req, res, next) => {
 app.all("*", (req, res) => {
     res.status(404).json({ error: "404 Not Found" });
 });
-
 
 async function startApp() {
     try {
