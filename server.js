@@ -11,19 +11,37 @@ const Authentication = require("./Auth");
 const app = express();
 
 require("dotenv").config();
+
+
+const http = require('http').Server(app);
+app.use(cors({
+    origin: process.env.CORS
+}));
+
+ 
+const socketIO = require('socket.io')(http, {
+    cors: {
+        origin: process.env.CORS
+    }
+});
+
 require('./middleware/passport')(passport);
+app.use(passport.initialize());
+
 const DBurl = process.env.dbUrl;
 const Port = process.env.PORT || 3000;
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(cors());
+
+const socketServer = require("./socketServer");
 
 app.use('/user', require('./routes/userRoutes'));
 
-app.use('/public', express.static(path.join(__dirname, 'public/images/uploads-1694645444247-893258167.png')));
+app.use('/public/', express.static(path.join(__dirname, 'public')));
+app.use('/private/', Authentication, express.static(path.join(__dirname, 'private')));
 
-app.use('/private/',Authentication,express.static(path.join(__dirname,'public/images/uploads-1694647725349-887633163.jpg')));
+socketServer(socketIO);
 
 app.use((error, req, res, next) => {
     let errorMessage = "An unknown error occurred";
@@ -38,16 +56,16 @@ app.use((error, req, res, next) => {
 
 //For Unknown Endpoints
 app.all("*", (req, res) => {
-    res.status(404).json({ error: "404 Not Found" });
+    res.status(404).json({ success: false, message: "URL not found", error: "404 Not Found" });
 });
 
 async function startApp() {
     try {
         mongoose.set("strictQuery", false);
         await mongoose.connect(DBurl);
-        console.log("Connected to the database successfully");
-        app.listen(Port, () => {
-            console.log("Connected to Server on Port ", Port)
+        success("Connected to the database successfully");
+        http.listen(Port, () => {
+            success("Connected to Server on Port ", Port)
         })
     } catch (err) {
         error({

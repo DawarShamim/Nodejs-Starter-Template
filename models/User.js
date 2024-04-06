@@ -1,21 +1,40 @@
-const mongoose =require('mongoose');
+const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-    Username: {
+    username: {
         type: String,
         required: true,
         unique: true,
-        lowercase:true
+        lowercase: true
     },
-    Password: {
+    password: {
         type: String,
         required: true
     },
-    Role: {
+    role: {
         type: String,
         enum: ['Anonymous', 'Admin'],
         default: 'Anonymous'
     },
+    socketId: {
+        type: String,
+        default: null
+    },
+    otp: {
+        type: String,
+        default: null
+    },
+    otpExpiry: {
+        type: Date,
+        default: null
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
+    }
+
+}, {
+    timestamps: true
 });
 
 UserSchema.pre('save', async function (next) {
@@ -37,6 +56,6 @@ UserSchema.pre('save', async function (next) {
     }
 });
 
-const User = mongoose.model('User',UserSchema);
-module.exports=User;
+const User = mongoose.model('User', UserSchema);
+module.exports = User;
 
