@@ -1,24 +1,34 @@
 const express = require("express");
 const cors = require('cors');
 const mongoose = require('mongoose');
-const { success, error } = require("consola");
+const { success, error,  info } = require("consola");
 const { isHttpError } = require("http-errors");
 const logger = require('morgan');
 const path = require('path');
 const passport = require("passport");
 
+const swaggerUI = require('swagger-ui-express');
+const swaggerSpec = require('./config/swaggerConfig');
+
+
 const Authentication = require("./Auth");
 const app = express();
+const swaggerApp = express();
 
 require("dotenv").config();
 
 
 const http = require('http').Server(app);
+const swaggerHttp = require('http').Server(swaggerApp);
+
+
+swaggerApp.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+
 app.use(cors({
     origin: process.env.CORS
 }));
 
- 
+
 const socketIO = require('socket.io')(http, {
     cors: {
         origin: process.env.CORS
@@ -30,6 +40,7 @@ app.use(passport.initialize());
 
 const DBurl = process.env.dbUrl;
 const Port = process.env.PORT || 3000;
+const SwaggerPort = process.env.SwaggerPort || 5000;
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -65,7 +76,10 @@ async function startApp() {
         await mongoose.connect(DBurl);
         success("Connected to the database successfully");
         http.listen(Port, () => {
-            success("Connected to Server on Port ", Port)
+            success("Connected to Server on Port", Port)
+        })
+        swaggerHttp.listen(SwaggerPort, () => {
+            info(`Documentation available at http://localhost:${SwaggerPort}/api-docs`)
         })
     } catch (err) {
         error({
