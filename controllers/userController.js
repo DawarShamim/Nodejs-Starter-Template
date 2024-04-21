@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const jwt = require('jsonwebtoken');
 const { generateToken } = require("../utils/helpers/common");
+const { logData } = require("../utils/logger");
 
 require('dotenv').config();
 
@@ -57,4 +58,12 @@ exports.signup = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
+};
+
+exports.loggign = async (req, res) => {
+    for (let i = 0; i < 10; i++) {
+        console.log("abc", i);
+        logData(`key${i}`, { message: `writing this data${i}` });
+    }
+    return res.status(200).json({ success: true, message: "AAA" });
 };

@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require('cors');
 const mongoose = require('mongoose');
-const { success, error,  info } = require("consola");
+const { success, error, info } = require("consola");
 const { isHttpError } = require("http-errors");
 const logger = require('morgan');
 const path = require('path');

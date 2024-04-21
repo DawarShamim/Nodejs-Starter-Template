@@ -29,10 +29,18 @@
     "passport-jwt": "^4.0.1",
     "path": "^0.12.7",
     "socket.io": "^4.7.5",
-    "swagger-jsdoc": "^6.2.8"
+    "swagger-jsdoc": "^6.2.8",
+    "winston": "^3.13.0",
+    "winston-mongodb": "^5.1.1"
   },
   "devDependencies": {
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "logs/*",
+      "logs/log.json"
+    ]
   }
 }

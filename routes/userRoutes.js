@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const userController = require('../controllers/userController')
+const userController = require('../controllers/userController');
 // /api/user
 
 /**
@@ -72,5 +72,7 @@ const userController = require('../controllers/userController')
 router.post("/login", userController.login);
 
 router.post("/signup", userController.signup);
+
+router.get('/testingLogger/:key',  userController.loggign);
 
 module.exports = router; 
