@@ -28,7 +28,6 @@ function logData(key, data) {
   try {
     console.log("data");
     logger.info({ [key]: data });
-    console.lop(aa._id);
   } catch (err) {
     logger.error(err);
   }

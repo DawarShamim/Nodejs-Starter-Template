@@ -159,10 +159,10 @@ module.exports = (socketIO) => {
             });
         });
 
-    function emitCustomEvent(data) {
+    function socketEventEmitter(eventName, socketId, data) {
         if (socketIO) {
-            console.log("herere at event")
-            socketIO.emit('custom-event', data);
+            console.log("herere at event");
+            socketIO.to(socketId).emit(eventName, data);
         } else {
             console.error('Socket server is not initialized.');
         }
@@ -185,6 +185,6 @@ module.exports = (socketIO) => {
         }
     }
 
-    module.exports.emitCustomEvent = emitCustomEvent;
+    module.exports.socketEventEmitter = socketEventEmitter;
     module.exports.sendAttachment = sendAttachment;
 };
