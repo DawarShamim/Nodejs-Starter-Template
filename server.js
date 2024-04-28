@@ -24,6 +24,9 @@ require("dotenv").config();
 const http = require('http').Server(app);
 const internalHttp = require('http').Server(internalApp);
 
+const cluster = require('cluster');
+const numCPUs = require('os').cpus().length;
+
 const internalUsers = {
     'Dawar2001': process.env.AuthPassword
 };
@@ -104,24 +107,55 @@ app.all("*", (req, res) => {
     res.status(404).json({ success: false, message: "URL not found", error: "404 Not Found" });
 });
 
+let retryCount = 0;
 async function startApp() {
     try {
-        mongoose.set("strictQuery", false);
+        mongoose.set("strictQuery", true);
         await mongoose.connect(DBurl);
         success("Connected to the database successfully");
-        http.listen(Port, () => {
-            success("Connected to Server on Port", Port)
-        })
-        internalHttp.listen(InternalPort, () => {
-            info(`Documentation available at http://localhost:${InternalPort}/api-docs`)
-        })
-    } catch (err) {
-        error({
-            message: `Unable to connect with the database: ${err.message}`,
-            badge: true,
-        });
-        startApp();
-    }
-};
 
+        if (cluster.isPrimary) {
+            console.log(`Primary ${process.pid} is running`);
+            internalHttp.listen(InternalPort, () => {
+                info(`Documentation available at http://localhost:${InternalPort}/api-docs`)
+            })
+
+            // Fork workers.
+            for (let i = 0; i < numCPUs; i++) {
+                cluster.fork();
+            }
+
+            cluster.on('exit', (worker, code, signal) => {
+                console.log(`Worker ${worker.process.pid} died`);
+                cluster.fork(); // Restart the worker if it dies
+            });
+        } else {
+            http.listen(Port, () => {
+                success("Connected to Server on Port", Port, process.pid);
+            });
+        }
+
+        // in case of cluster removal uncomment below lines
+        // http.listen(Port, () => {
+        //     success("Connected to Server on Port", Port)
+        // })
+        // internalHttp.listen(InternalPort, () => {
+        //     info(`Documentation available at http://localhost:${InternalPort}/api-docs`)
+        // })
+    } catch (err) {
+        if (retryCount < 3) {
+            error({
+                message: `Unable to connect with the database: ${err.message}`,
+                badge: true,
+            });
+            retryCount++;
+            startApp();
+        } else {
+            error({
+                message: `Failed to start the application after 3 attempts. Exiting...`,
+                badge: true,
+            });
+        }
+    };
+};
 startApp();
