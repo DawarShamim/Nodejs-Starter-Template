@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require('cors');
 const mongoose = require('mongoose');
-const { success, error, info } = require("consola");
+const { success, error, info ,ready,start} = require("consola");
 const { isHttpError } = require("http-errors");
 const morganLogger = require('morgan');
 const path = require('path');
@@ -26,6 +26,8 @@ const internalHttp = require('http').Server(internalApp);
 
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
+
+const redisAdapter = require('socket.io-redis');
 
 const internalUsers = {
     'Dawar2001': process.env.AuthPassword
@@ -130,8 +132,11 @@ async function startApp() {
                 cluster.fork(); // Restart the worker if it dies
             });
         } else {
+
+            socketIO.adapter(redisAdapter({ host: 'localhost', port: 6379 })); // Replace with your Redis server details
+
             http.listen(Port, () => {
-                success("Connected to Server on Port", Port, process.pid);
+                start("Connected to Server on Port", Port, process.pid);
             });
         }
 
