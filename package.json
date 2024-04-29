@@ -1,7 +1,7 @@
 {
-  "name": "newproject",
+  "name": "nodejs-boilerplate",
   "version": "1.0.0",
-  "description": "",
+  "description": "This template serves as a boilerplate for creating a new project in Nodejs",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
