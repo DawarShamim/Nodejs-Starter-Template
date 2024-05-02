@@ -11,7 +11,7 @@ module.exports = (passport) => {
     passport.use(
         new Strategy(options, async (payload, done) => {
             try {
-                const user = await User.findById(payload.user_id);
+                const user = await User.findById(payload.userId);
 
                 if (!user) {
                     return done(null, false);

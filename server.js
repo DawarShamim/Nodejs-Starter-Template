@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require('cors');
 const mongoose = require('mongoose');
-const { success, error, info ,ready,start} = require("consola");
+const { success, error, info, ready, start } = require("consola");
 const { isHttpError } = require("http-errors");
 const morganLogger = require('morgan');
 const path = require('path');
@@ -97,6 +97,8 @@ socketServer(socketIO);
 app.use((error, req, res, next) => {
     let errorMessage = "An unknown error occurred";
     let statusCode = 500;
+    console.error(error);
+    logger.error(error);
     if (isHttpError(error)) {
         statusCode = error.status;
         errorMessage = error.message;

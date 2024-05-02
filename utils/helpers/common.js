@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken")
+
 function getOtp() {
     return Math.floor(1000 + Math.random() * 9000);
 };
@@ -8,8 +10,8 @@ function generateToken (userData){
 
     let token = jwt.sign(
         {
-            user_id: userData._id,
-            username: userData.username,
+            userId: userData._id,
+            userName: userData.username,
             UserRole: userData.role
         },
         jwtKey

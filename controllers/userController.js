@@ -2,6 +2,7 @@ const User = require("../models/User");
 const jwt = require('jsonwebtoken');
 const { generateToken } = require("../utils/helpers/common");
 const { logData } = require("../utils/logger");
+const bcrypt = require("bcryptjs");
 
 require('dotenv').config();
 
@@ -11,12 +12,12 @@ exports.login = async (req, res, next) => {
     try {
         const username = req.body?.Username;
         const password = req.body?.Password;
-        let user = await User.findOne({ Username: username });
+        let user = await User.findOne({ username: username });
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
-        // const passwordMatch = await bcrypt.compare(password, user.Password);
-        const passwordMatch = (password === user.password);
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        // const passwordMatch = (password === user.password);
         if (!passwordMatch) {
             return res.status(401).json({ success: false, message: 'Invalid password' });
         }
@@ -37,7 +38,8 @@ exports.signup = async (req, res, next) => {
             return res.status(400).json({ success: false, message: 'Both Passwords should be same' });
         }
 
-        let newUser = await User.findOne({ Username: username });
+        let newUser = await User.findOne({ username: username });
+        
         if (!newUser) {
             newUser = new User({
                 username: username,
