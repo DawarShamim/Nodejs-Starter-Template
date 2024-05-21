@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "This template serves as a boilerplate for creating a new project in Nodejs",
   "main": "server.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server,js",
+    "dev": "nodemon server.js",
+    "lint": "npx eslint .",
+    "fix": "npx eslint . --fix",
     "seed": "echo \"Error:no Seeders Declared \n to run seeders replace this by node seeder-path\" && exit 1",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

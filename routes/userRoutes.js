@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const userController = require('../controllers/userController');
+const validate = require("../middleware/validate");
+
+const { loginJoi } = require('../validations/commonJoi');
 // /api/user
 
 /**
@@ -72,7 +75,7 @@ const userController = require('../controllers/userController');
  *                    description: A message indicating that the user was not found
  */
 
-router.post("/login", userController.login);
+router.post("/login", validate(loginJoi), userController.login);
 
 router.post("/signup", userController.signup);
 
