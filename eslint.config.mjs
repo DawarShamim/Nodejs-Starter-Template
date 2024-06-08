@@ -2,7 +2,7 @@ import globals from 'globals';
 import pluginJs from '@eslint/js';
 
 export default [
-    { files: ['**/*.js'], languageOptions: { sourceType: 'commonjs' } },
+    { files: ['**/*.js'], languageOptions: {sourceType: 'commonjs'} },
     { languageOptions: { globals: globals.browser } },
     pluginJs.configs.recommended, {
         rules: {
@@ -26,8 +26,8 @@ export default [
             // Enhance Readability
             'indent': ['error', 2, { 'SwitchCase': 1 }],
             'no-mixed-spaces-and-tabs': 'warn',
-            'spaces-before-blocks': 'error',
-            'space-in-params': 'error',
+            'space-before-blocks': 'error',
+            'space-in-parens': 'error',
             'space-infix-ops': 'error',
             'space-unary-ops': 'error',
             'quotes': ['error', 'single'],
@@ -47,7 +47,7 @@ export default [
 
             // ES6
             'arrow-spacing': 'error',
-            'no-confusing-arrows': 'error',
+            'no-confusing-arrow': 'error',
             'no-duplicate-imports': 'error',
             'no-var': 'error',
             'object-shorthand': 'error',
