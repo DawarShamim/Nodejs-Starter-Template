@@ -1,18 +1,15 @@
-const User = require("../models/User");
-const jwt = require('jsonwebtoken');
-const { generateToken } = require("../utils/helpers/common");
-const { logData } = require("../utils/logger");
-const bcrypt = require("bcryptjs");
+const User = require('../models/User');
+const { generateToken } = require('../utils/helpers/common');
+const { logData } = require('../utils/logger');
+const bcrypt = require('bcryptjs');
 
 require('dotenv').config();
-
-
 
 exports.login = async (req, res, next) => {
     try {
         const username = req.body?.Username;
         const password = req.body?.Password;
-        let user = await User.findOne({ username: username });
+        const user = await User.findOne({ username });
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
@@ -22,8 +19,8 @@ exports.login = async (req, res, next) => {
             return res.status(401).json({ success: false, message: 'Invalid password' });
         }
 
-        let token = generateToken(user);
-        res.status(200).json({ success: true, message: 'Login successful', Token: token });
+        const token = generateToken(user);
+        return res.status(200).json({ success: true, message: 'Login successful', Token: token });
     } catch (err) {
         next(err);
     }
@@ -38,12 +35,12 @@ exports.signup = async (req, res, next) => {
             return res.status(400).json({ success: false, message: 'Both Passwords should be same' });
         }
 
-        let newUser = await User.findOne({ username: username });
-        
+        let newUser = await User.findOne({ username });
+
         if (!newUser) {
             newUser = new User({
-                username: username,
-                password: password,
+                username,
+                password,
                 role: 'Anonymous'
             });
 
@@ -51,11 +48,11 @@ exports.signup = async (req, res, next) => {
 
             // verify  the account by sending a verification email to the registered Email ID of the user
             // business logic to be added
-            let token = generateToken(newUser);
+            const token = generateToken(newUser);
 
             return res.status(200).json({ success: true, message: 'Signup successful', Token: token });
         } else {
-            return res.status(409).json({ message: "Username not available" });
+            return res.status(409).json({ message: 'Username not available' });
         }
     } catch (err) {
         next(err);
@@ -64,8 +61,8 @@ exports.signup = async (req, res, next) => {
 
 exports.loggign = async (req, res) => {
     for (let i = 0; i < 10; i++) {
-        console.log("abc", i);
+        // console.log('abc', i);
         logData(`key${i}`, { message: `writing this data${i}` });
     }
-    return res.status(200).json({ success: true, message: "AAA" });
+    return res.status(200).json({ success: true, message: 'AAA' });
 };

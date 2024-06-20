@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const jwt = require('jsonwebtoken');
 const jwtEncryptionKey = process.env.jwtEncryptionKey;
 
@@ -10,7 +11,14 @@ function failureResponse(res, message, code, error = {}) {
 };
 
 function getDocumentTotal(totalCount) {
-    return (totalCount && totalCount.length > 0) ? totalCount[0].value : 0
+    return (totalCount && totalCount.length > 0) ? totalCount[0].value : 0;
+};
+
+function paginationParam(page, pageSize) {
+    page = Number(page) || 1;
+    pageSize = Number(pageSize) || 10;
+    const skipSize = (page - 1) * pageSize;
+    return { page, pageSize, skipSize };
 };
 
 function generateToken(payload, keepMeLogin) {
@@ -18,5 +26,14 @@ function generateToken(payload, keepMeLogin) {
 }
 
 function generateOTP() {
-    return Math.floor(100000 + Math.random() * 900000);
+    return Math.floor(100000 + (Math.random() * 900000));
 }
+
+module.exports = {
+    successResponse,
+    failureResponse,
+    getDocumentTotal,
+    paginationParam,
+    generateToken,
+    generateOTP
+};

@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
 const path = require('path');
 const handlebars = require('handlebars');
 const fs = require('fs');
@@ -12,7 +14,7 @@ async function sendEmail(
 ) {
     const templatePath = path.resolve(__dirname, `../templates/${templateName}.html`);
     // need to resolve
-    const templateSource = fs.readFileSync(templatePath,'utf8');
+    const templateSource = fs.readFileSync(templatePath, 'utf8');
 
     const template = handlebars.compile(templateSource);
 
@@ -21,15 +23,17 @@ async function sendEmail(
     const mailOptions = {
         from: process.env.EMAIL,
         to: userEmail,
-        subject: subject,
-        html: html,
+        subject,
+        html,
     };
 
     nodeMailerTransporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.log(error);
         } else {
-            console.log('Email sent: ' + info.response);
+            console.log(`Email sent: ${info.response}`);
         }
     });
 }
+
+module.exports = sendEmail;

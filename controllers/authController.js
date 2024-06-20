@@ -1,16 +1,18 @@
 
+// eslint-disable-next-line no-undef
 const secretKey = process.env.jwtEncryptionKey;
-const UserModel = require("../models/User");
+const jwt = require('jsonwebtoken');
+const UserModel = require('../models/User');
 
 exports.verifyEmail = async (req, res, next) => {
     try {
         const token = req.params.token;
         if (!token) {
-            return res.status(400).json({ success: false, message: "Invalid Parameters" })
+            return res.status(400).json({ success: false, message: 'Invalid Parameters' });
         }
         const decoded = jwt.verify(token, secretKey);
         if (decoded) {
-            const existingUser = await UserModel.findById(userId);
+            const existingUser = await UserModel.findById(decoded.userId);
             if (existingUser && existingUser.otp === decoded.otp) {
 
                 if (existingUser.otpExpiry >= Date.now()) {
@@ -28,7 +30,7 @@ exports.verifyEmail = async (req, res, next) => {
         }
         return res.status(412).send({ success: false, message: 'Invalid Token' });
     } catch (err) {
-        next(err)
+        next(err);
 
     }
 };

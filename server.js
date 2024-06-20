@@ -1,25 +1,26 @@
-const express = require("express");
+/* eslint-disable no-undef */
+const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const { success, error, info, ready, start } = require("consola");
-const { isHttpError } = require("http-errors");
+const { success, error, info, start } = require('consola');
+const { isHttpError } = require('http-errors');
 const morganLogger = require('morgan');
 const path = require('path');
-const passport = require("passport");
-const { logger } = require("./utils/logger");
+const passport = require('passport');
+const { logger } = require('./utils/logger');
 
 
 const basicAuth = require('express-basic-auth');
-const logsModel = require("./models/Log")
+const logsModel = require('./models/Log');
 
 const swaggerUI = require('swagger-ui-express');
 const swaggerSpec = require('./config/swaggerConfig');
 
-const Authentication = require("./Auth");
+const Authentication = require('./Auth');
 const app = express();
 const internalApp = express();
 
-require("dotenv").config();
+require('dotenv').config();
 
 const http = require('http').Server(app);
 const internalHttp = require('http').Server(internalApp);
@@ -50,8 +51,8 @@ internalApp.get('/errorLog', authMiddleware, async (req, res) => {
         let sortOrder = -1;
 
         if (req.query.sort === 'asc') { sortOrder = 1; }
-        logger.info("acessing logs");
-        const allLogs = await logsModel.find({ level: "error" })
+        logger.info('acessing logs');
+        const allLogs = await logsModel.find({ level: 'error' })
             .skip(skipSize)
             .limit(pageSize)
             .sort({ 'timestamp': sortOrder }
@@ -60,7 +61,7 @@ internalApp.get('/errorLog', authMiddleware, async (req, res) => {
         return res.status(200).json({ success: true, message: 'Logs retrieved', allLogs });
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, err })
+        return res.status(500).json({ success: false, err });
     }
 });
 
@@ -84,7 +85,7 @@ const InternalPort = process.env.InternalPort || 5000;
 app.use(morganLogger('dev'));
 app.use(express.json());
 
-const socketServer = require("./socketServer");
+const socketServer = require('./socketServer');
 
 app.use('/user', require('./routes/userRoutes'));
 
@@ -95,7 +96,7 @@ app.use('/private/', Authentication, express.static(path.join(__dirname, 'privat
 socketServer(socketIO);
 
 app.use((error, req, res, next) => {
-    let errorMessage = "An unknown error occurred";
+    let errorMessage = 'An unknown error occurred';
     let statusCode = 500;
     console.error(error);
     logger.error(error);
@@ -107,22 +108,22 @@ app.use((error, req, res, next) => {
 });
 
 //For Unknown Endpoints
-app.all("*", (req, res) => {
-    res.status(404).json({ success: false, message: "URL not found", error: "404 Not Found" });
+app.all('*', (req, res) => {
+    res.status(404).json({ success: false, message: 'URL not found', error: '404 Not Found' });
 });
 
 let retryCount = 0;
 async function startApp() {
     try {
-        mongoose.set("strictQuery", true);
+        mongoose.set('strictQuery', true);
         await mongoose.connect(DBurl);
-        success("Connected to the database successfully");
+        success('Connected to the database successfully');
 
         if (cluster.isPrimary) {
             console.log(`Primary ${process.pid} is running`);
             internalHttp.listen(InternalPort, () => {
-                info(`Documentation available at http://localhost:${InternalPort}/api-docs`)
-            })
+                info(`Documentation available at http://localhost:${InternalPort}/api-docs`);
+            });
 
             // Fork workers.
             for (let i = 0; i < numCPUs; i++) {
@@ -138,13 +139,13 @@ async function startApp() {
             socketIO.adapter(redisAdapter({ host: 'localhost', port: 6379 })); // Replace with your Redis server details
 
             http.listen(Port, () => {
-                start("Connected to Server on Port", Port, process.pid);
+                start('Connected to Server on Port', Port, process.pid);
             });
         }
 
         // in case of cluster removal uncomment below lines
         // http.listen(Port, () => {
-        //     success("Connected to Server on Port", Port)
+        //     success('Connected to Server on Port', Port)
         // })
         // internalHttp.listen(InternalPort, () => {
         //     info(`Documentation available at http://localhost:${InternalPort}/api-docs`)
@@ -159,7 +160,7 @@ async function startApp() {
             startApp();
         } else {
             error({
-                message: `Failed to start the application after 3 attempts. Exiting...`,
+                message: 'Failed to start the application after 3 attempts. Exiting...',
                 badge: true,
             });
         }

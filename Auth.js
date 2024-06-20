@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const passport = require("passport");
+const passport = require('passport');
 
-const Authentication = passport.authenticate("jwt", { session: false });
+const Authentication = passport.authenticate('jwt', { session: false });
 
-module.exports =  Authentication ;
+module.exports =  Authentication;

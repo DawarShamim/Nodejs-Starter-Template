@@ -1,14 +1,15 @@
-const jwt = require("jsonwebtoken")
+/* eslint-disable no-undef */
+const jwt = require('jsonwebtoken');
 
 function getOtp() {
-    return Math.floor(1000 + Math.random() * 9000);
+    return Math.floor(1000 + (Math.random() * 9000));
 };
 
 
-function generateToken (userData){
+function generateToken (userData) {
     const jwtKey = process.env.jwtEncryptionKey;
 
-    let token = jwt.sign(
+    const token = jwt.sign(
         {
             userId: userData._id,
             userName: userData.username,
@@ -16,7 +17,7 @@ function generateToken (userData){
         },
         jwtKey
     );
-    return token
+    return token;
 }
 
-module.exports = { getOtp ,generateToken}
+module.exports = { getOtp ,generateToken};
