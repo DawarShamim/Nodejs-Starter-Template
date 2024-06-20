@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "This template serves as a boilerplate for creating a new project in Nodejs",
   "main": "server.js",
-  "type": "commonjs",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
@@ -16,6 +15,7 @@
   "author": "Dawar",
   "license": "ISC",
   "dependencies": {
+    "@eslint/js": "^9.4.0",
     "bcryptjs": "^2.4.3",
     "consola": "^3.2.3",
     "cors": "^2.8.5",
@@ -39,6 +39,9 @@
     "winston-mongodb": "^5.1.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.4.0",
+    "eslint": "^9.4.0",
+    "globals": "^15.4.0",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.0"
   },

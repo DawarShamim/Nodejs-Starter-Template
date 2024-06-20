@@ -4,15 +4,14 @@ import pluginJs from '@eslint/js';
 export default [
     { files: ['**/*.js'], languageOptions: {sourceType: 'commonjs'} },
     { languageOptions: { globals: globals.browser } },
-    pluginJs.configs.recommended, {
+    pluginJs.configs.recommended,
+    {
         rules: {
             'no-console': 'warn',
-
             // To Avoid Bugs
             'no-undef': 'error',
             'semi': 'error',
             'semi-spacing': 'error',
-
             //Best Practices
             'eqeqeq': 'warn',
             'no-invalid-this': 'error',
@@ -24,7 +23,7 @@ export default [
             'no-unused-vars': ['warn', { 'argsIgnorePattern': 'req|res|next|__' }],
 
             // Enhance Readability
-            'indent': ['error', 2, { 'SwitchCase': 1 }],
+            'indent': ['error', 4, { 'SwitchCase': 1 }],
             'no-mixed-spaces-and-tabs': 'warn',
             'space-before-blocks': 'error',
             'space-in-parens': 'error',
@@ -44,7 +43,6 @@ export default [
             'object-property-newline': ['error',
                 { 'allowAllPropertiesOnSameLine': true }
             ],
-
             // ES6
             'arrow-spacing': 'error',
             'no-confusing-arrow': 'error',
@@ -53,26 +51,6 @@ export default [
             'object-shorthand': 'error',
             'prefer-const': 'error',
             'prefer-template': 'error',
-
         }
-
-    }];
-
-// // Indentation : enforce consistent Indentation
-// 'indent' : ['error', 2],
-// //SemiColon :enforce semicolons at the of statements
-// 'semi' : ['error', 'always'],
-//  //Qoutes :enforce single Quotes for string;
-// 'quotes' : ['error', 'single'],
-
-// 'no-used-vars': 'error',
-
-// 'prefer-arrow-callback': 'error',
-
-// 'arrow-parens': ['error', 'always'],
-
-// 'object-shorthand': ['error', 'always'],
-
-// 'no-eval': 'error',
-
-// 'no-sync': 'error',
+    }
+];
