@@ -60,6 +60,7 @@ internalApp.get('/errorLog', authMiddleware, async (req, res) => {
 
         return res.status(200).json({ success: true, message: 'Logs retrieved', allLogs });
     } catch (err) {
+        // eslint-disable-next-line no-console
         console.log(err);
         return res.status(500).json({ success: false, err });
     }
@@ -87,7 +88,7 @@ app.use(express.json());
 
 const socketServer = require('./socketServer');
 
-app.use('/user', require('./routes/userRoutes'));
+app.use('/api', require('./routes/index'));
 
 app.use('/public/', express.static(path.join(__dirname, 'public')));
 app.use('/private/', Authentication, express.static(path.join(__dirname, 'private')));
@@ -98,6 +99,7 @@ socketServer(socketIO);
 app.use((error, req, res, next) => {
     let errorMessage = 'An unknown error occurred';
     let statusCode = 500;
+    // eslint-disable-next-line no-console
     console.error(error);
     logger.error(error);
     if (isHttpError(error)) {
@@ -120,6 +122,7 @@ async function startApp() {
         success('Connected to the database successfully');
 
         if (cluster.isPrimary) {
+            // eslint-disable-next-line no-console
             console.log(`Primary ${process.pid} is running`);
             internalHttp.listen(InternalPort, () => {
                 info(`Documentation available at http://localhost:${InternalPort}/api-docs`);
@@ -131,7 +134,8 @@ async function startApp() {
             }
 
             cluster.on('exit', (worker, code, signal) => {
-                console.log(`Worker ${worker.process.pid} died`);
+                // eslint-disable-next-line no-console
+                console.log(`Worker ${worker.process.pid} died\ncode: ${code}\nsignal: ${signal}`);
                 cluster.fork(); // Restart the worker if it dies
             });
         } else {
@@ -145,11 +149,11 @@ async function startApp() {
 
         // in case of cluster removal uncomment below lines
         // http.listen(Port, () => {
-        //     success('Connected to Server on Port', Port)
-        // })
+        //     success('Connected to Server on Port', Port);
+        // });
         // internalHttp.listen(InternalPort, () => {
-        //     info(`Documentation available at http://localhost:${InternalPort}/api-docs`)
-        // })
+        //     info(`Documentation available at http://localhost:${InternalPort}/api-docs`);
+        // });
     } catch (err) {
         if (retryCount < 3) {
             error({

@@ -10,16 +10,13 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        select: false
     },
     role: {
         type: String,
         enum: ['Anonymous', 'Admin'],
         default: 'Anonymous'
-    },
-    socketId: {
-        type: String,
-        default: null
     },
     otp: {
         type: String,

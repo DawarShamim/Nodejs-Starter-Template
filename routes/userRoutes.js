@@ -4,7 +4,7 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const validate = require('../middleware/validate');
 
-const { loginJoi } = require('../validations/commonJoi');
+const { loginJoi, signupJoi } = require('../validations/commonJoi');
 // /api/user
 
 /**
@@ -77,7 +77,7 @@ const { loginJoi } = require('../validations/commonJoi');
 
 router.post('/login', validate(loginJoi), userController.login);
 
-router.post('/signup', userController.signup);
+router.post('/signup', validate(signupJoi), userController.signup);
 
 router.get('/testingLogger/:key', userController.loggign);
 
