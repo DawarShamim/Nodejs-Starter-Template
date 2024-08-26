@@ -1,6 +1,6 @@
 
 const User = require('../models/User');
-const { successResponse, failureResponse } = require('../utils/common');
+const { successResponse, failureResponse, paginationParam, getDocumentTotal, pagination } = require('../utils/common');
 const { generateToken } = require('../utils/helpers/common');
 const { logData } = require('../utils/logger');
 const bcrypt = require('bcryptjs');
@@ -49,6 +49,31 @@ exports.signup = async (req, res, next) => {
     } else {
       return failureResponse(res, 409, 'Username not available');
     }
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    const { page, pageSize, skip } = paginationParam(req.query.page, req.query.pageSize);
+
+    const [result] = await User.aggregate([
+      {
+        '$facet': {
+          totalCount: [{ $count: 'value' }],
+          documents: [{ $skip: skip }, { $limit: pageSize }] // add projection here wish you re-shape the docs
+        }
+      }
+    ]);
+
+    const { documents, totalCount } = result;
+    const totalItems = getDocumentTotal(totalCount);
+    const paginated = pagination({ page, totalItems, limit: pageSize });
+
+    return successResponse(res, 200, 'Signup successful', { documents, paginated });
+
+
   } catch (err) {
     next(err);
   }
