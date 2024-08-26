@@ -41,30 +41,29 @@ const authMiddleware = basicAuth({
 });
 
 
-internalApp.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
-internalApp.get('/errorLog', authMiddleware, async (req, res) => {
-  try {
-    const page = req.query.page || 1;
-    const pageSize = req.query.pageSize || 10;
-    const skipSize = (page - 1) * pageSize;
-    let sortOrder = -1;
+// internalApp.get('/errorLog', authMiddleware, async (req, res) => {
+//   try {
+//     const page = req.query.page || 1;
+//     const pageSize = req.query.pageSize || 10;
+//     const skipSize = (page - 1) * pageSize;
+//     let sortOrder = -1;
 
-    if (req.query.sort === 'asc') { sortOrder = 1; }
-    logger.info('acessing logs');
-    const allLogs = await logsModel.find({ level: 'error' })
-      .skip(skipSize)
-      .limit(pageSize)
-      .sort({ 'timestamp': sortOrder }
-      );
+//     if (req.query.sort === 'asc') { sortOrder = 1; }
+//     logger.info('acessing logs');
+//     const allLogs = await logsModel.find({ level: 'error' })
+//       .skip(skipSize)
+//       .limit(pageSize)
+//       .sort({ 'timestamp': sortOrder }
+//       );
 
-    return res.status(200).json({ success: true, message: 'Logs retrieved', allLogs });
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-    return res.status(500).json({ success: false, err });
-  }
-});
+//     return res.status(200).json({ success: true, message: 'Logs retrieved', allLogs });
+//   } catch (err) {
+//     // eslint-disable-next-line no-console
+//     console.log(err);
+//     return res.status(500).json({ success: false, err });
+//   }
+// });
 
 app.use(cors({
   origin: process.env.CORS

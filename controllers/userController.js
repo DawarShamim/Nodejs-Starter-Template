@@ -73,7 +73,6 @@ exports.getAllUsers = async (req, res, next) => {
 
     return successResponse(res, 200, 'Signup successful', { documents, paginated });
 
-
   } catch (err) {
     next(err);
   }
