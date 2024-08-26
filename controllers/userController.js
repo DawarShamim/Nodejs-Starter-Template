@@ -11,7 +11,7 @@ exports.login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username }).select('username password');
-    
+
     if (!user) { return failureResponse(res, 404, 'User not found'); }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
@@ -52,12 +52,4 @@ exports.signup = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
-
-exports.loggign = async (req, res) => {
-  for (let i = 0; i < 10; i++) {
-    // console.log('abc', i);
-    logData(`key${i}`, { message: `writing this data${i}` });
-  }
-  return res.status(200).json({ success: true, message: 'AAA' });
 };

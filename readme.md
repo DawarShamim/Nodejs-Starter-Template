@@ -7,6 +7,7 @@ config/
 constants.js
 controllers/
    authController.js
+   notificationController.js
    userController.js
 eslint.config.mjs
 gfs.js
@@ -19,6 +20,7 @@ middleware/
    validate.js
 models/
    Log.js
+   Notification.js
    Session.js
    User.js
 package-lock.json
