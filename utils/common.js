@@ -3,11 +3,11 @@ const jwt = require('jsonwebtoken');
 const jwtEncryptionKey = process.env.jwtEncryptionKey;
 
 function successResponse(res, StatusCode, message, data = {}) {
-  return res.status(StatusCode).json({ success: true, message, data });
+  return res.status(StatusCode).json({ success: true, message, ...data });
 }
 
 function failureResponse(res, StatusCode, message, error = {}) {
-  return res.status(StatusCode).json({ success: false, message, error });
+  return res.status(StatusCode).json({ success: false, message, ...error });
 };
 
 function getDocumentTotal(totalCount) {
