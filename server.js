@@ -18,12 +18,12 @@ const swaggerSpec = require('./config/swaggerConfig');
 
 const Authentication = require('./Auth');
 const app = express();
-const internalApp = express();
+// const internalApp = express();
 
 require('dotenv').config();
 
 const http = require('http').Server(app);
-const internalHttp = require('http').Server(internalApp);
+// const internalHttp = require('http').Server(internalApp);
 
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
@@ -40,35 +40,31 @@ const authMiddleware = basicAuth({
   unauthorizedResponse: { message: 'Unauthorized access' }
 });
 
-
-internalApp.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
-
-internalApp.get('/errorLog', authMiddleware, async (req, res) => {
-  try {
-    const page = req.query.page || 1;
-    const pageSize = req.query.pageSize || 10;
-    const skipSize = (page - 1) * pageSize;
-    let sortOrder = -1;
-
-    if (req.query.sort === 'asc') { sortOrder = 1; }
-    logger.info('acessing logs');
-    const allLogs = await logsModel.find({ level: 'error' })
-      .skip(skipSize)
-      .limit(pageSize)
-      .sort({ 'timestamp': sortOrder }
-      );
-
-    return res.status(200).json({ success: true, message: 'Logs retrieved', allLogs });
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-    return res.status(500).json({ success: false, err });
-  }
-});
+// internalApp.get('/errorLog', authMiddleware, async (req, res) => {
+//   try {
+//     const page = req.query.page || 1;
+//     const pageSize = req.query.pageSize || 10;
+//     const skipSize = (page - 1) * pageSize;
+//     let sortOrder = -1;
+//     if (req.query.sort === 'asc') { sortOrder = 1; }
+//     logger.info('acessing logs');
+//     const allLogs = await logsModel.find({ level: 'error' })
+//     .skip(skipSize)
+//     .limit(pageSize)
+//     .sort({ 'timestamp': sortOrder }
+//     );
+//     return res.status(200).json({ success: true, message: 'Logs retrieved', allLogs });
+//   } catch (err) {
+//     // eslint-disable-next-line no-console
+//     console.log(err);
+//     return res.status(500).json({ success: false, err });
+//   }
+// });
 
 app.use(cors({
   origin: process.env.CORS
 }));
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 const socketIO = require('socket.io')(http, {
   cors: {
@@ -80,7 +76,7 @@ require('./middleware/passport')(passport);
 app.use(passport.initialize());
 
 const DBurl = process.env.dbUrl;
-const Port = process.env.PORT || 3000;
+const Port = process.env.PORT || 5000;
 const InternalPort = process.env.InternalPort || 5000;
 
 app.use(morganLogger('dev'));
@@ -92,7 +88,6 @@ app.use('/api', require('./routes/index'));
 
 app.use('/public/', express.static(path.join(__dirname, 'public')));
 app.use('/private/', Authentication, express.static(path.join(__dirname, 'private')));
-
 
 socketServer(socketIO);
 
@@ -151,9 +146,9 @@ async function startApp() {
     http.listen(Port, () => {
       success('Connected to Server on Port', Port);
     });
-    internalHttp.listen(InternalPort, () => {
-      info(`Documentation available at http://localhost:${InternalPort}/api-docs`);
-    });
+    // internalHttp.listen(InternalPort, () => {
+    //   info(`Documentation available at http://localhost:${InternalPort}/api-docs`);
+    // });
   } catch (err) {
     if (retryCount < 3) {
       error({

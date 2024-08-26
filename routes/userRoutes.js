@@ -10,7 +10,7 @@ const { loginJoi, signupJoi } = require('../validations/commonJoi');
 /**
  * @swagger
  * paths:
- *  /user/login:
+ *  /api/user/login:
  *    post:
  *      summary: Login user
  *      description: Login user with provided username and password
@@ -80,7 +80,7 @@ router.post('/login', validate(loginJoi), userController.login);
 /**
  * @swagger
  * paths:
- *  /user/signup:
+ *  /api/user/signup:
  *    post:
  *      summary: Register a new user
  *      description: Creates a new user account with the provided username and password.

@@ -9,7 +9,7 @@ function getOtp() {
 
 
 async function generateToken(req, userData, keepLoggedIn = false) {
-  const jwtKey = process.env.JWT_ENCRYPTION_KEY;
+  const jwtKey = process.env.jwtEncryptionKey;
   let expiresIn = '1d';
   if (keepLoggedIn) {
     expiresIn = '30d';
