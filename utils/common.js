@@ -14,13 +14,12 @@ function getDocumentTotal(totalCount) {
   return (totalCount && totalCount.length > 0) ? totalCount[0].value : 0;
 };
 
-function paginationParam(page, pageSize) {
-  page = Number(page) || 1;
-  pageSize = Number(pageSize) || 10;
-  const skipSize = (page - 1) * pageSize;
-  return { page, pageSize, skipSize };
+function paginationParam(currentPage, givenPageSize) {
+  page = Number(currentPage) || 1;
+  pageSize = Number(givenPageSize) || 10;
+  const skip = (page - 1) * pageSize;
+  return { page, pageSize, skip };
 };
-
 const pagination = ({ page, totalItems, limit }) => {
   const totalPages = Math.ceil(Number(totalItems) / Number(limit));
   return {

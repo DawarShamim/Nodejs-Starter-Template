@@ -10,7 +10,7 @@ const { loginJoi, signupJoi } = require('../validations/commonJoi');
 /**
  * @swagger
  * paths:
- *  /user/login:
+ *  /api/user/login:
  *    post:
  *      summary: Login user
  *      description: Login user with provided username and password
@@ -80,7 +80,7 @@ router.post('/login', validate(loginJoi), userController.login);
 /**
  * @swagger
  * paths:
- *  /user/signup:
+ *  /api/user/signup:
  *    post:
  *      summary: Register a new user
  *      description: Creates a new user account with the provided username and password.
@@ -148,6 +148,82 @@ router.post('/login', validate(loginJoi), userController.login);
  */
 
 router.post('/signup', validate(signupJoi), userController.signup);
-router.post('/getAll', validate(signupJoi), userController.getAllUsers);
+
+/**
+ * @swagger
+ * paths:
+ *  /api/user/getAll:
+ *    get:
+ *      summary: Retrieve a paginated list of users
+ *      description: Fetches a list of users with pagination. The response includes the users and pagination details.
+ *      tags:
+ *        - User
+ *      parameters:
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *            default: 1
+ *          description: The page number to retrieve.
+ *        - in: query
+ *          name: pageSize
+ *          schema:
+ *            type: integer
+ *            default: 10
+ *          description: The number of items per page.
+ *      responses:
+ *        '200':
+ *          description: Successfully retrieved the list of users
+ *          content:
+ *           application/json:
+ *             schema:
+ *                type: object
+ *                properties:
+ *                  success:
+ *                    example: true
+ *                    type: boolean
+ *                    description: Indicates if the request was successful.
+ *                  message:
+ *                    type: string
+ *                    description: A message indicating the result of the operation.
+ *                    example: Users retrieved successfully
+ *                  data:
+ *                    type: object
+ *                    properties:
+ *                      documents:
+ *                        type: array
+ *                        items:
+ *                          type: object
+ *                          description: User object containing user details.
+ *                      paginated:
+ *                        type: object
+ *                        properties:
+ *                          page:
+ *                            type: integer
+ *                            description: The current page number.
+ *                          pageSize:
+ *                            type: integer
+ *                            description: The number of items per page.
+ *                          totalItems:
+ *                            type: integer
+ *                            description: The total number of items available.
+ *        '500':
+ *          description: Server error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  success:
+ *                    example: false
+ *                    type: boolean
+ *                    description: Indicates if the request was unsuccessful due to a server error.
+ *                  message:
+ *                    type: string
+ *                    description: A message indicating the reason for the server error.
+ *                    example: An error occurred while retrieving users.
+ */
+
+router.get('/getAll', userController.getAllUsers);
 
 module.exports = router; 

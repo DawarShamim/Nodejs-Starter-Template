@@ -61,8 +61,8 @@ exports.getAllUsers = async (req, res, next) => {
     const [result] = await User.aggregate([
       {
         '$facet': {
-          totalCount: [{ $count: 'value' }],
-          documents: [{ $skip: skip }, { $limit: pageSize }] // add projection here wish you re-shape the docs
+          documents: [{ $skip: skip }, { $limit: pageSize }],// add projection here wish you re-shape the docs
+          totalCount: [{ $count: 'value' }]
         }
       }
     ]);
