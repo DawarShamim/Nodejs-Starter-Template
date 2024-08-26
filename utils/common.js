@@ -21,6 +21,17 @@ function paginationParam(page, pageSize) {
   return { page, pageSize, skipSize };
 };
 
+const pagination = ({ page, totalItems, limit }) => {
+  const totalPages = Math.ceil(Number(totalItems) / Number(limit));
+  return {
+    currentPage: Number(page),
+    totalPages,
+    totalItems: Number(totalItems),
+    itemsPerPage: Number(limit)
+  };
+};
+
+
 function generateToken(payload, keepMeLogin) {
   return keepMeLogin ? jwt.sign(payload, jwtEncryptionKey, { expiresIn: '7d' }) : jwt.sign(payload, jwtEncryptionKey, { expiresIn: '12h' });
 }
@@ -33,6 +44,7 @@ module.exports = {
   successResponse,
   failureResponse,
   getDocumentTotal,
+  pagination,
   paginationParam,
   generateToken,
   generateOTP

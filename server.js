@@ -40,26 +40,31 @@ const authMiddleware = basicAuth({
   unauthorizedResponse: { message: 'Unauthorized access' }
 });
 
-// internalApp.get('/errorLog', authMiddleware, async (req, res) => {
-//   try {
-//     const page = req.query.page || 1;
-//     const pageSize = req.query.pageSize || 10;
-//     const skipSize = (page - 1) * pageSize;
-//     let sortOrder = -1;
-//     if (req.query.sort === 'asc') { sortOrder = 1; }
-//     logger.info('acessing logs');
-//     const allLogs = await logsModel.find({ level: 'error' })
-//     .skip(skipSize)
-//     .limit(pageSize)
-//     .sort({ 'timestamp': sortOrder }
-//     );
-//     return res.status(200).json({ success: true, message: 'Logs retrieved', allLogs });
-//   } catch (err) {
-//     // eslint-disable-next-line no-console
-//     console.log(err);
-//     return res.status(500).json({ success: false, err });
-//   }
-// });
+
+internalApp.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+
+internalApp.get('/errorLog', authMiddleware, async (req, res) => {
+  try {
+    const page = req.query.page || 1;
+    const pageSize = req.query.pageSize || 10;
+    const skipSize = (page - 1) * pageSize;
+    let sortOrder = -1;
+
+    if (req.query.sort === 'asc') { sortOrder = 1; }
+    logger.info('acessing logs');
+    const allLogs = await logsModel.find({ level: 'error' })
+      .skip(skipSize)
+      .limit(pageSize)
+      .sort({ 'timestamp': sortOrder }
+      );
+
+    return res.status(200).json({ success: true, message: 'Logs retrieved', allLogs });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    return res.status(500).json({ success: false, err });
+  }
+});
 
 app.use(cors({
   origin: process.env.CORS
@@ -76,7 +81,7 @@ require('./middleware/passport')(passport);
 app.use(passport.initialize());
 
 const DBurl = process.env.dbUrl;
-const Port = process.env.PORT || 5000;
+const Port = process.env.PORT || 3000;
 const InternalPort = process.env.InternalPort || 5000;
 
 app.use(morganLogger('dev'));
