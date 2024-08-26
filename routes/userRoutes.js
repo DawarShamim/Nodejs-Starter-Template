@@ -148,6 +148,6 @@ router.post('/login', validate(loginJoi), userController.login);
  */
 
 router.post('/signup', validate(signupJoi), userController.signup);
-router.get('/getAll', userController.getAllUsers);
+router.post('/getAll', validate(signupJoi), userController.getAllUsers);
 
 module.exports = router; 
