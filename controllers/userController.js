@@ -1,7 +1,7 @@
 
 const User = require('../models/User');
 const { successResponse, failureResponse, paginationParam, getDocumentTotal, pagination } = require('../utils/common');
-const { generateToken } = require('../utils/helpers/common');
+const { generateToken } = require('../utils/common');
 const { logData } = require('../utils/logger');
 const bcrypt = require('bcryptjs');
 
@@ -18,8 +18,8 @@ exports.login = async (req, res, next) => {
 
     if (!passwordMatch) { return failureResponse(res, 401, 'Invalid password'); }
 
-    const token = await generateToken(user, req);
-    return successResponse(res, 200, 'Login successful', token);
+    const token = await generateToken(req, user);
+    return successResponse(res, 200, 'Login successful', { token });
   } catch (err) {
     next(err);
   }
@@ -45,7 +45,7 @@ exports.signup = async (req, res, next) => {
       // business logic to be added
       const token = await generateToken(req, newUser);
 
-      return successResponse(res, 200, 'Signup successful', token);
+      return successResponse(res, 200, 'Signup successful', { token });
     } else {
       return failureResponse(res, 409, 'Username not available');
     }

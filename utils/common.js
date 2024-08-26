@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const jwt = require('jsonwebtoken');
-const jwtEncryptionKey = process.env.jwtEncryptionKey;
+const Session = require('../models/Session');
 
 function successResponse(res, StatusCode, message, data = {}) {
   return res.status(StatusCode).json({ success: true, message, ...data });
@@ -31,8 +31,44 @@ const pagination = ({ page, totalItems, limit }) => {
 };
 
 
-function generateToken(payload, keepMeLogin) {
-  return keepMeLogin ? jwt.sign(payload, jwtEncryptionKey, { expiresIn: '7d' }) : jwt.sign(payload, jwtEncryptionKey, { expiresIn: '12h' });
+async function generateToken(req, userData, keepLoggedIn = false) {
+  const jwtKey = process.env.jwtEncryptionKey;
+  let expiresIn = '1d';
+  if (keepLoggedIn) {
+    expiresIn = '30d';
+  }
+
+  // const userAgent = uaParser(req.headers['user-agent']);
+  // console.log('userAgent', userAgent);
+  // const ip = req.ip;
+
+  const sessionExpiry = new Date(Date.now() + (keepLoggedIn ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000)); // 30 days or 1 day
+
+  const session = new Session({
+    userId: userData._id,
+    token: null, // Will be set after generating the JWT
+    expiry: sessionExpiry,
+    // deviceId: 'MAC Address',
+    // ip,
+    // userAgent: req.headers['user-agent']
+  });
+
+  await session.save();
+
+  const token = jwt.sign(
+    {
+      userId: userData._id,
+      userName: userData.username,
+      userRole: userData.role,
+      userSession: session._id
+    },
+    jwtKey,
+    { expiresIn }
+  );
+
+  session.token = token;
+  await session.save();
+  return token;
 }
 
 function generateOTP() {
