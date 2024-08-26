@@ -31,49 +31,49 @@ const numCPUs = require('os').cpus().length;
 const redisAdapter = require('socket.io-redis');
 
 const internalUsers = {
-    'Dawar2001': process.env.AuthPassword
+  'Dawar2001': process.env.AuthPassword
 };
 
 const authMiddleware = basicAuth({
-    users: internalUsers,
-    challenge: true, // Sends a 401 Unauthorized response if authentication fails
-    unauthorizedResponse: { message: 'Unauthorized access' }
+  users: internalUsers,
+  challenge: true, // Sends a 401 Unauthorized response if authentication fails
+  unauthorizedResponse: { message: 'Unauthorized access' }
 });
 
 
 internalApp.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 internalApp.get('/errorLog', authMiddleware, async (req, res) => {
-    try {
-        const page = req.query.page || 1;
-        const pageSize = req.query.pageSize || 10;
-        const skipSize = (page - 1) * pageSize;
-        let sortOrder = -1;
+  try {
+    const page = req.query.page || 1;
+    const pageSize = req.query.pageSize || 10;
+    const skipSize = (page - 1) * pageSize;
+    let sortOrder = -1;
 
-        if (req.query.sort === 'asc') { sortOrder = 1; }
-        logger.info('acessing logs');
-        const allLogs = await logsModel.find({ level: 'error' })
-            .skip(skipSize)
-            .limit(pageSize)
-            .sort({ 'timestamp': sortOrder }
-            );
+    if (req.query.sort === 'asc') { sortOrder = 1; }
+    logger.info('acessing logs');
+    const allLogs = await logsModel.find({ level: 'error' })
+      .skip(skipSize)
+      .limit(pageSize)
+      .sort({ 'timestamp': sortOrder }
+      );
 
-        return res.status(200).json({ success: true, message: 'Logs retrieved', allLogs });
-    } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log(err);
-        return res.status(500).json({ success: false, err });
-    }
+    return res.status(200).json({ success: true, message: 'Logs retrieved', allLogs });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    return res.status(500).json({ success: false, err });
+  }
 });
 
 app.use(cors({
-    origin: process.env.CORS
+  origin: process.env.CORS
 }));
 
 const socketIO = require('socket.io')(http, {
-    cors: {
-        origin: process.env.CORS
-    }
+  cors: {
+    origin: process.env.CORS
+  }
 });
 
 require('./middleware/passport')(passport);
@@ -97,77 +97,77 @@ app.use('/private/', Authentication, express.static(path.join(__dirname, 'privat
 socketServer(socketIO);
 
 app.use((error, req, res, next) => {
-    let errorMessage = 'An unknown error occurred';
-    let statusCode = 500;
-    // eslint-disable-next-line no-console
-    console.error(error);
-    logger.error(error);
-    if (isHttpError(error)) {
-        statusCode = error.status;
-        errorMessage = error.message;
-    }
-    res.status(statusCode).json({ error: errorMessage });
+  let errorMessage = 'An unknown error occurred';
+  let statusCode = 500;
+  // eslint-disable-next-line no-console
+  console.error(error);
+  logger.error(error);
+  if (isHttpError(error)) {
+    statusCode = error.status;
+    errorMessage = error.message;
+  }
+  res.status(statusCode).json({ error: errorMessage });
 });
 
 //For Unknown Endpoints
 app.all('*', (req, res) => {
-    res.status(404).json({ success: false, message: 'URL not found', error: '404 Not Found' });
+  res.status(404).json({ success: false, message: 'URL not found', error: '404 Not Found' });
 });
 
 let retryCount = 0;
 async function startApp() {
-    try {
-        mongoose.set('strictQuery', true);
-        await mongoose.connect(DBurl);
-        success('Connected to the database successfully');
+  try {
+    mongoose.set('strictQuery', true);
+    await mongoose.connect(DBurl);
+    success('Connected to the database successfully');
 
-        if (cluster.isPrimary) {
-            // eslint-disable-next-line no-console
-            console.log(`Primary ${process.pid} is running`);
-            internalHttp.listen(InternalPort, () => {
-                info(`Documentation available at http://localhost:${InternalPort}/api-docs`);
-            });
+    // if (cluster.isPrimary) {
+    //   // eslint-disable-next-line no-console
+    //   console.log(`Primary ${process.pid} is running`);
+    //   internalHttp.listen(InternalPort, () => {
+    //     info(`Documentation available at http://localhost:${InternalPort}/api-docs`);
+    //   });
 
-            // Fork workers.
-            for (let i = 0; i < numCPUs; i++) {
-                cluster.fork();
-            }
+    //   // Fork workers.
+    //   for (let i = 0; i < numCPUs; i++) {
+    //     cluster.fork();
+    //   }
 
-            cluster.on('exit', (worker, code, signal) => {
-                // eslint-disable-next-line no-console
-                console.log(`Worker ${worker.process.pid} died\ncode: ${code}\nsignal: ${signal}`);
-                cluster.fork(); // Restart the worker if it dies
-            });
-        } else {
+    //   cluster.on('exit', (worker, code, signal) => {
+    //     // eslint-disable-next-line no-console
+    //     console.log(`Worker ${worker.process.pid} died\ncode: ${code}\nsignal: ${signal}`);
+    //     cluster.fork(); // Restart the worker if it dies
+    //   });
+    // } else {
 
-            socketIO.adapter(redisAdapter({ host: 'localhost', port: 6379 })); // Replace with your Redis server details
+    //   // socketIO.adapter(redisAdapter({ host: 'localhost', port: 6379 })); // Replace with your Redis server details
 
-            http.listen(Port, () => {
-                start('Connected to Server on Port', Port, process.pid);
-            });
-        }
+    //   http.listen(Port, () => {
+    //     start('Connected to Server on Port', Port, process.pid);
+    //   });
+    // }
 
-        // in case of cluster removal uncomment below lines
-        // http.listen(Port, () => {
-        //     success('Connected to Server on Port', Port);
-        // });
-        // internalHttp.listen(InternalPort, () => {
-        //     info(`Documentation available at http://localhost:${InternalPort}/api-docs`);
-        // });
-    } catch (err) {
-        if (retryCount < 3) {
-            error({
-                message: `Unable to connect with the database: ${err.message}`,
-                badge: true,
-            });
-            retryCount++;
-            startApp();
-        } else {
-            error({
-                message: 'Failed to start the application after 3 attempts. Exiting...',
-                badge: true,
-            });
-        }
-    };
+    // in case of cluster removal uncomment below lines
+    http.listen(Port, () => {
+      success('Connected to Server on Port', Port);
+    });
+    internalHttp.listen(InternalPort, () => {
+      info(`Documentation available at http://localhost:${InternalPort}/api-docs`);
+    });
+  } catch (err) {
+    if (retryCount < 3) {
+      error({
+        message: `Unable to connect with the database: ${err.message}`,
+        badge: true,
+      });
+      retryCount++;
+      startApp();
+    } else {
+      error({
+        message: 'Failed to start the application after 3 attempts. Exiting...',
+        badge: true,
+      });
+    }
+  };
 };
 startApp();

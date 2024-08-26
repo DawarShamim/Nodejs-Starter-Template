@@ -23,9 +23,9 @@ const { loginJoi, signupJoi } = require('../validations/commonJoi');
  *            schema:
  *              type: object
  *              properties:
- *                Username:
+ *                username:
  *                  type: string
- *                Password:
+ *                password:
  *                  type: string
  *      responses:
  *        '200':
