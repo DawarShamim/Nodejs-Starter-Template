@@ -21,7 +21,6 @@ export default [
       'no-useless-return': 'error',
       'no-constant-condition': 'warn',
       'no-unused-vars': ['warn', { 'argsIgnorePattern': 'req|res|next|__' }],
-
       // Enhance Readability
       'indent': ['error', 2, { 'SwitchCase': 1 }],
       'no-mixed-spaces-and-tabs': 'warn',

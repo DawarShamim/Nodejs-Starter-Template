@@ -19,7 +19,7 @@ exports.login = async (req, res, next) => {
     if (!passwordMatch) { return failureResponse(res, 401, 'Invalid password'); }
 
     const token = await generateToken(user, req);
-    return successResponse(res, 200, 'Login successful', token);
+    return successResponse(res, 200, 'Login successful', {token});
   } catch (err) {
     next(err);
   }
@@ -72,7 +72,6 @@ exports.getAllUsers = async (req, res, next) => {
     const paginated = pagination({ page, totalItems, limit: pageSize });
 
     return successResponse(res, 200, 'Signup successful', { documents, paginated });
-
 
   } catch (err) {
     next(err);

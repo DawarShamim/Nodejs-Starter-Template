@@ -18,7 +18,7 @@ const swaggerSpec = require('./config/swaggerConfig');
 
 const Authentication = require('./Auth');
 const app = express();
-const internalApp = express();
+// const internalApp = express();
 
 require('dotenv').config();
 
@@ -41,7 +41,6 @@ const authMiddleware = basicAuth({
 });
 
 
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // internalApp.get('/errorLog', authMiddleware, async (req, res) => {
 //   try {
@@ -69,6 +68,7 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 app.use(cors({
   origin: process.env.CORS
 }));
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 const socketIO = require('socket.io')(http, {
   cors: {
@@ -81,7 +81,7 @@ app.use(passport.initialize());
 
 const DBurl = process.env.dbUrl;
 const Port = process.env.PORT || 3000;
-// const InternalPort = process.env.InternalPort || 5000;
+const InternalPort = process.env.InternalPort || 5000;
 
 app.use(morganLogger('dev'));
 app.use(express.json());
@@ -92,7 +92,6 @@ app.use('/api', require('./routes/index'));
 
 app.use('/public/', express.static(path.join(__dirname, 'public')));
 app.use('/private/', Authentication, express.static(path.join(__dirname, 'private')));
-
 
 socketServer(socketIO);
 

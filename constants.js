@@ -1,5 +1,6 @@
 const formValidation = 'form Validation';
 const userNotFound = 'user not found';
+// const serverError = 'server error';
 
 const SocketEvent = {
   NOTIFICATION: 'notification'
@@ -7,5 +8,6 @@ const SocketEvent = {
 
 module.exports = {
   SocketEvent,
-  formValidation
+  formValidation,
+  userNotFound
 };
