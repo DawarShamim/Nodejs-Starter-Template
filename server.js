@@ -150,6 +150,7 @@ async function startApp() {
     // in case of cluster removal uncomment below lines
     http.listen(Port, () => {
       success('Connected to Server on Port', Port);
+      info(`Documentation available at http://localhost:${Port}/api-docs`);
     });
     // internalHttp.listen(InternalPort, () => {
     //   info(`Documentation available at http://localhost:${InternalPort}/api-docs`);

@@ -96,6 +96,9 @@ router.post('/login', validate(loginJoi), userController.login);
  *                username:
  *                  type: string
  *                  description: The desired username for the new account.
+ *                email:
+ *                  type: string
+ *                  description: User email for new account.
  *                password:
  *                  type: string
  *                  description: The desired password for the new account.
@@ -151,6 +154,13 @@ router.post('/signup', validate(signupJoi), userController.signup);
 
 /**
  * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ * 
  * paths:
  *  /api/user/getAll:
  *    get:
@@ -158,6 +168,8 @@ router.post('/signup', validate(signupJoi), userController.signup);
  *      description: Fetches a list of users with pagination. The response includes the users and pagination details.
  *      tags:
  *        - User
+ *      security:
+ *        - bearerAuth: []
  *      parameters:
  *        - in: query
  *          name: page
@@ -225,5 +237,33 @@ router.post('/signup', validate(signupJoi), userController.signup);
  */
 
 router.get('/getAll', userController.getAllUsers);
+
+/**
+ * @swagger
+ * /api/user/reset-password:
+ *   post:
+ *     summary: Reset user password by generating and sending an OTP to the user's email
+ *     tags: 
+ *       - User
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: The user's email
+ *                 example: "user@example.com"
+ *     responses:
+ *       200:
+ *         description: OTP sent successfully
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/reset-password', userController.resetPassword);
 
 module.exports = router; 
